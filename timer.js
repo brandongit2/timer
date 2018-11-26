@@ -5,7 +5,8 @@ let seconds2 = []; // Seconds - ones place
 
 const NUMBER_SPACING = 325;
 
-let timerStart = 600;
+let timerStart = 10;
+timerStart++;
 let counter = timerStart;
 let sMoved = 0;
 
@@ -34,30 +35,38 @@ function assignNumbers() {
             let val = time[i] - 3 + j;
             switch (i) {
                 case 0: {
-                    let newTime = counter + (-3 + j) * 600;
-                    //console.log(j, newTime);
+                    let newTime = counter + (-3 + j) * 600 + time[1] * 60 + time[2] * 10 + time[3];
                     if (val < 1) val = '';
                     if (val > 9) val -= 10;
                     if (newTime > timerStart) val = '';
+                    if (newTime < 0) val = '';
                     break;
                 }
                 case 1: {
+                    let newTime = counter + (-3 + j) * 60 + time[0] * 600 + time[2] * 10 + time[3];
                     if (val < 0) val += 10;
                     if (val > 9) val -= 10;
+                    if (newTime > timerStart) val = '';
+                    if (newTime < 0) val = '';
                     break;
                 }
                 case 2: {
+                    let newTime = counter + (-3 + j) * 10 + time[1] * 60 + time[0] * 600 + time[3];
                     if (val < 0) val += 6;
                     if (val > 5) val -= 6;
+                    if (newTime > timerStart) val = '';
+                    if (newTime < 0) val = '';
                     break;
                 }
                 case 3: {
+                    let newTime = counter - 3 + j + time[1] * 60 + time[2] * 10 + time[0] * 600;
                     if (val < 0) val += 10;
                     if (val > 9) val -= 10;
+                    if (newTime > timerStart) val = '';
+                    if (newTime < 0) val = '';
                     break;
                 }
             }
-            if (i === 0) console.log(j, val);
             el.firstElementChild.innerHTML = val;
             j++;
         }
@@ -72,89 +81,38 @@ function init() {
         let time = splitTime(counter);
         let m1 = document.createElement('div');
         let m1t = document.createElement('p');
+        if (i === 3) m1t.innerHTML = '-';
         m1.classList.add('timer-container', 'timer-minutes-1', '_' + i);
         if (i === 2) m1.classList.add('brighten');
         if (i === 3) m1.classList.add('darken');
-        let val;
-        if (i < 4) {
-            val = time[0] - 3 + i;
-            let newTime = counter + (-3 + i) * 600;
-            if (newTime >= 0) {
-                if (val < 1) val = '';
-                if (val > 9) val -= 10;
-            } else {
-                val = '';
-            }
-        } else {
-            val = ''
-        }
-        m1t.innerHTML = val;
         m1.appendChild(m1t);
         minutes1.push(m1);
         let m2 = document.createElement('div');
         let m2t = document.createElement('p');
+        if (i === 3) m2t.innerHTML = '-';
         m2.classList.add('timer-container', 'timer-minutes-2', '_' + i);
         if (i === 2) m2.classList.add('brighten');
         if (i === 3) m2.classList.add('darken');
-        if (i < 4) {
-            val = time[1] - 3 + i;
-            let newTime = counter + (-3 + i) * 60;
-            if (newTime >= 0) {
-                if (val < 0) val += 10;
-                if (val > 9) val -= 10;
-            } else if (i === 3) {
-                val = 0;
-            } else {
-                val = '';
-            }
-        } else {
-            val = '';
-        }
-        m2t.innerHTML = val;
         m2.appendChild(m2t);
         minutes2.push(m2);
         let s1 = document.createElement('div');
         let s1t = document.createElement('p');
+        if (i === 3) s1t.innerHTML = '-';
         s1.classList.add('timer-container', 'timer-seconds-1', '_' + i);
         if (i === 2) s1.classList.add('brighten');
         if (i === 3) s1.classList.add('darken');
-        if (i < 4) {
-            val = time[2] - 3 + i;
-            let newTime = counter + (-3 + i) * 10;
-            if (newTime >= 0) {
-                if (val < 0) val += 6;
-                if (val > 5) val -= 6;
-            } else if (i === 3) {
-                val = 0;
-            } else {
-                val = '';
-            }
-        } else {
-            val = '';
-        }
-        s1t.innerHTML = val;
         s1.appendChild(s1t);
         seconds1.push(s1);
         let s2 = document.createElement('div');
         let s2t = document.createElement('p');
+        if (i === 3) s2t.innerHTML = '-';
         s2.classList.add('timer-container', 'timer-seconds-2', '_' + i);
         if (i === 2) s2.classList.add('brighten');
         if (i === 3) s2.classList.add('darken');
-        if (i < 4) {
-            val = time[3] - 3 + i;
-            let newTime = counter - 3 + i;
-            if (newTime >= 0) {
-                if (val < 0) val += 10;
-                if (val > 9) val -= 10;
-            } else {
-                val = '';
-            }
-        } else {
-            val = '';
-        }
-        s2t.innerHTML = val;
         s2.appendChild(s2t);
         seconds2.push(s2);
+
+        assignNumbers();
     }
 
     // Make number elements
@@ -185,16 +143,17 @@ function init() {
     }
 
     let timer = setInterval(() => {
+        if (counter === 0) clearInterval(timer);
         assignNumbers();
         setTimeout(() => {
             for (let el of minutes1.concat(minutes2.concat(seconds1.concat(seconds2)))) {
                 el.classList.remove('move');
             }
         }, 1000);
-        //if (counter === 0) clearInterval(timer);
     }, 1000);
     setTimeout(() => {
-        setInterval(() => {
+        let yeet = setInterval(() => {
+            if (counter === 0) clearInterval(yeet);
             for (let el of seconds2) {
                 el.classList.add('move');
             }
